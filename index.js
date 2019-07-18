@@ -86,3 +86,4 @@ module.exports = function LFGer(mod) {
       .catch(console.error);
 
     };
+};
