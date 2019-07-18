@@ -1,0 +1,10 @@
+{
+  "files": {
+    "index.js": "35D27454AF4B36D03D7930FC43A1BCA2A9385903B6079F056B644405962ED535",
+    "module.json": "e72d696f1a1401f9d7b6842df17a51e0de59e1c5fe46938c05050f5f646f157c"
+  },
+  "defs": {
+    "C_REGISTER_PARTY_INFO": 1,
+    "S_SHOW_PARTY_MATCH_INFO": 1
+  }
+}
