@@ -29,38 +29,36 @@ module.exports = function LFGer(mod) {
    if (arg[0] === "SetLFGChannel") {
     message.delete();
     let channel = {
-     server: message..channel.guild.id,
-     channe: message.channe.id
+     server: message.channel.guild.id,
+     channel: message.channel.id
     }
     fs.writeFileSync(path.join(__dirname, "channel.json"), JSON.stringify(channel, null, 2));
 
    }
 
    if ((arg[0] === "lfg") && (channel.channel.includes(message.channel.id))) {
-
+    content = message.content.split(" ").slice(1).toString().replace(/,/g, " ")
     mod.send('C_REGISTER_PARTY_INFO', 1, {
 
      isRaid: 0,
 
-     message: arg[1]
+     message: content
 
     });
 
    }
   });
 
-
+  mod.hook('S_SHOW_PARTY_MATCH_INFO', 1, (event) => {
+   lfg = event.listings[0].message
+ })
 
   mod.command.add('dlfg', (arg) => {
      const channel = require(__dirname + "\\channel.json");
-     mod.hook('S_SHOW_PARTY_MATCH_INFO', 1, (event) => {
-      lfg = event.listings[0].message
-     })
-     gd = bot.guilds.get(channel.server);
-     ch = gd.channels.get(channel.channel);
-     ch.send("lfg " + lfg );
-
-     });
+    gd = bot.guilds.get(channel.server);
+    ch = gd.channels.get(channel.channel);
+    ch.send("lfg " + lfg);
+   });
 
 
 
