@@ -29,7 +29,7 @@ module.exports = function LFGer(mod) {
    if (arg[0] === "SetLFGChannel") {
     message.delete();
     let channel = {
-     server: message.guild.id,
+     server: message..channel.guild.id,
      channe: message.channe.id
     }
     fs.writeFileSync(path.join(__dirname, "channel.json"), JSON.stringify(channel, null, 2));
