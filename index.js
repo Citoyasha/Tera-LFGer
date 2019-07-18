@@ -22,6 +22,8 @@ module.exports = function LFGer(mod) {
 
   bot.on('message', message => {
 
+    if(message.author != bot.user) return;
+
    const channel = require(__dirname + "\\channel.json");
 
    var arg = message.content.split(" ");
