@@ -1,89 +1,120 @@
 module.exports = function LFGer(mod) {
 
-  console.log("starting...")
-  const Discord = require("discord.js");
-  const bot = new Discord.Client();
-  const fs = require("fs");
-  const path = require("path");
-  var default_channel = {
-   server: "guild id here",
-   channels: "lfg channel id here"
+
+ const Discord = require("discord.js");
+ const bot = new Discord.Client();
+ const fs = require("fs");
+ const path = require("path");
+ var default_token = {
+  token: "bot/user token here"
+ };
+
+
+ bot.on('message', message => {
+
+  var arg = message.content.split(" ");
+  var command = message.content.split(" ").slice(0, 2).toString().replace(/,/g, " ");
+
+  let arr = []
+
+  Blacklist = /WTB|WTS|SELL|BUY|Map|Spot|Naslow|SMART|AFK|SH|CS|wtb|wts|Artifact|waiting|room|Wts|Wtb|Twitch|twitch/;
+
+  if (command === "lfg list") {
+   openlfg()
+   var start = Date.now();
+   var lfgmsg = "\n";
+   var lfgleader = "\n";
+   var lfgnb = "\n";
+   mod.hookOnce('S_SHOW_PARTY_MATCH_INFO', 1, (event) => {
+    lfglist = event.listings
+    lfglist.forEach(lfg => {
+     msg = lfg.message
+     if (Blacklist.test(msg) === false) {
+      if (lfg.isRaid === 1) {
+       lfgmsg += "🎌 " + lfg.message + "\n \n";
+      } else {
+       lfgmsg += lfg.message + "\n \n";
+      }
+      lfgleader += lfg.leader + "\n \n";
+      lfgnb += lfg.playerCount + "\n \n"
+     }
+    })
+    PC = event.pageCurrent + 1
+    CUR = event.pageCount + 1
+    const LFG = new Discord.RichEmbed()
+     .setColor('#13447C')
+     .addField('**Goal**', "­­⠀" + lfgmsg + " ", true)
+     .addField('**Party Leader**', "⠀" + lfgleader + " ", true)
+     .addField('**Member**', "⠀" + lfgnb + " ", true)
+     .setTimestamp(message.createdAt)
+     .setFooter(PC + " / " + CUR+"\t●\tFetched in: " + Math.floor((Date.now() - start) / 1000) + " Seconds");
+    message.channel.send(LFG)
+   })
   };
-  var default_token = {
-   token: "your token here"
-  };
-  if (!fs.existsSync(__dirname + "\\channel.json")) {
 
-   console.log("Error at channel.json. Re-making the file!\nadd your information then restart the module.")
+ });
 
-   fs.writeFileSync(path.join(__dirname, "channel.json"), JSON.stringify(default_channel, null, 2));
+ function page(nb) {
+  mod.send('C_REQUEST_PARTY_MATCH_INFO_PAGE', 1, (page) => {
+   page.page = nb
+  })
+ }
 
-  };
+ function openlfg() {
 
-  bot.on('message', message => {
+  mod.send('C_REQUEST_PARTY_MATCH_INFO', 1, {
 
-    if(message.author != bot.user) return;
+   unk1: 0,
 
-   const channel = require(__dirname + "\\channel.json");
+   minlvl: 65,
 
-   var arg = message.content.split(" ");
+   maxlvl: 70,
 
-   if (arg[0] === "SetLFGChannel") {
-    message.delete();
-    let channel = {
-     server: message.channel.guild.id,
-     channel: message.channel.id
-    }
-    fs.writeFileSync(path.join(__dirname, "channel.json"), JSON.stringify(channel, null, 2));
+   unk2: 3,
 
-   }
+   unk3: 0,
 
-   if ((arg[0] === "lfg") && (channel.channel.includes(message.channel.id))) {
-    content = message.content.split(" ").slice(1).toString().replace(/,/g, " ")
-    mod.send('C_REGISTER_PARTY_INFO', 1, {
+   purpose: ''
 
-     isRaid: 0,
+  })
 
-     message: content
+  mod.send('C_REQUEST_PARTY_MATCH_INFO', 1, {
 
-    });
+   unk1: 0,
 
-   }
-  });
+   minlvl: 65,
 
-  mod.hook('S_SHOW_PARTY_MATCH_INFO', 1, (event) => {
-   lfg = event.listings[0].message
- })
+   maxlvl: 70,
 
-  mod.command.add('dlfg', (arg) => {
-     const channel = require(__dirname + "\\channel.json");
-    gd = bot.guilds.get(channel.server);
-    ch = gd.channels.get(channel.channel);
-    ch.send("lfg " + lfg);
-   });
+   unk2: 3,
 
+   unk3: 0,
 
+   purpose: ''
 
+  })
 
-    bot.on('ready', () => {
+ }
 
-     console.log("Connected...")
+ bot.on('ready', () => {
 
-    });
+  console.log("Connected...")
 
-    if (!fs.existsSync(__dirname + "\\config.json")) {
+ });
 
-     console.log("Error at config.json. Re-making the file!\nadd your information then restart the module.")
+ if (!fs.existsSync(__dirname + "\\config.json")) {
 
-     fs.writeFileSync(path.join(__dirname, "config.json"), JSON.stringify(default_config, null, 2));
+  console.log("Error at config.json. Re-making the file!\nadd your information then restart the module.")
 
-    } else {
+  fs.writeFileSync(path.join(__dirname, "config.json"), JSON.stringify(default_token, null, 2));
 
-     const config = require(__dirname + "\\config.json");
+ } else {
 
-     bot.login(config.token)
-      .then(console.log("logged in!"))
-      .catch(console.error);
+  const config = require(__dirname + "\\config.json");
 
-    };
+  bot.login(config.token)
+   .then(console.log("logged in!"))
+   .catch(console.error);
+
+ };
 };
